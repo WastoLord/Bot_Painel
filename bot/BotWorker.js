@@ -211,8 +211,8 @@ process.on('message', (msg) => {
 
         case 'chat:send': {
             const chatMod = getModule('chat')
-            if (chatMod?.enabled) {
-                chatMod.sendMessage(bot, ctx, msg.message)
+            if (chatMod?.enabled && typeof chatMod.send === 'function') {
+                chatMod.send(bot, ctx, msg.message)
             } else {
                 bot.chat(msg.message)
             }
