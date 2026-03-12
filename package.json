@@ -1,0 +1,15 @@
+{
+  "name": "mineflayer-panel",
+  "version": "0.1.0",
+  "description": "Painel de gerenciamento de bots Mineflayer",
+  "main": "index.js",
+  "scripts": {
+    "test:bot": "node test-bot.js"
+  },
+  "dependencies": {
+    "mineflayer": "^4.23.0",
+    "mineflayer-pathfinder": "^2.4.5",
+    "mineflayer-pvp": "^1.3.2",
+    "minecraft-data": "^3.67.0"
+  }
+}
