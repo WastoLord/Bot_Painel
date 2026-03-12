@@ -1,42 +1,43 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
-import { isLogged, getUser } from './lib/auth'
+import { useEffect, useRef } from 'react'
+import { io } from 'socket.io-client'
+import { getAccessToken, clearSession } from '../lib/auth'
 
-import Login     from './pages/Login'
-import Dashboard from './pages/Dashboard'
-import BotPage   from './pages/Bot'
-import Admin     from './pages/Admin'
+let socket = null
 
-function Private({ children }) {
-    if (!isLogged()) return <Navigate to="/login" replace />
-    return children
+export function getSocket() {
+    if (!socket) {
+        socket = io('/', {
+            auth: { token: getAccessToken() },
+            transports: ['websocket'],
+            autoConnect: true
+        })
+        socket.on('connect_error', (err) => {
+            if (err.message === 'Token inválido.') {
+                clearSession()
+                window.location.href = '/login'
+            }
+        })
+    }
+    return socket
 }
 
-function AdminOnly({ children }) {
-    const user = getUser()
-    if (!isLogged()) return <Navigate to="/login" replace />
-    if (user?.role !== 'admin') return <Navigate to="/dashboard" replace />
-    return children
-}
+export function useBot(botId, handlers) {
+    const handlersRef = useRef(handlers)
+    handlersRef.current = handlers
 
-export default function App() {
-    return (
-        <Routes>
-            <Route path="/login" element={<Login />} />
-
-            <Route path="/dashboard" element={
-                <Private><Dashboard /></Private>
-            } />
-
-            <Route path="/bot/:id" element={
-                <Private><BotPage /></Private>
-            } />
-
-            <Route path="/admin" element={
-                <AdminOnly><Admin /></AdminOnly>
-            } />
-
-            {/* Redirect raiz */}
-            <Route path="*" element={<Navigate to={isLogged() ? '/dashboard' : '/login'} replace />} />
-        </Routes>
-    )
+    useEffect(() => {
+        if (!botId) return
+        const s = getSocket()
+        s.emit('subscribe', { botId })
+        const on = (ev, fn) => s.on(ev, (data) => { if (data.botId === botId) fn(data) })
+        on('bot:status', (d) => handlersRef.current.onStatus?.(d.data))
+        on('bot:chat',   (d) => handlersRef.current.onChat?.(d.entry))
+        on('bot:error',  (d) => handlersRef.current.onError?.(d.message))
+        on('bot:death',  ()  => handlersRef.current.onDeath?.())
+        on('bot:ready',  ()  => handlersRef.current.onReady?.())
+        return () => {
+            s.emit('unsubscribe', { botId })
+            ;['bot:status','bot:chat','bot:error','bot:death','bot:ready'].forEach(e => s.off(e))
+        }
+    }, [botId])
 }
