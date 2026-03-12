@@ -1,0 +1,29 @@
+{
+  "name": "mineflayer-panel",
+  "version": "0.1.0",
+  "description": "Painel de gerenciamento de bots Mineflayer",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "concurrently \"node server.js\" \"npm run dev --prefix frontend\"",
+    "build": "npm run build --prefix frontend",
+    "test:bot": "node test-bot.js",
+    "test:api": "node test-api.js"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "better-sqlite3": "^9.4.3",
+    "concurrently": "^8.2.2",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "minecraft-data": "^3.67.0",
+    "mineflayer": "^4.23.0",
+    "mineflayer-pathfinder": "^2.4.5",
+    "mineflayer-pvp": "^1.3.2",
+    "socket.io": "^4.7.5"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
