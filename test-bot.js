@@ -14,7 +14,7 @@ const OPTS = {
     owner:    'WastoLord_13',
     password: '',
     authMode: 'none',
-    host:     'jogar.craftsapiens.com.br',
+    host:     'been-destinations.gl.joinmc.link',
     port:     25565
 }
 
