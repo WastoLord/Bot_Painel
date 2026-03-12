@@ -12,7 +12,8 @@ const OPTS = {
     botId:    'teste_wasto',
     botName:  'Plasma_Teste',
     owner:    'WastoLord_13',
-    password: process.env.BOT_PASSWORD ?? 'senha123',
+    password: '',
+    authMode: 'none',
     host:     'jogar.craftsapiens.com.br',
     port:     25565
 }
