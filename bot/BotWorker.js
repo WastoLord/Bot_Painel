@@ -29,19 +29,20 @@ const { pathfinder } = require('mineflayer-pathfinder')
 const pvp          = require('mineflayer-pvp').plugin
 const Context      = require('../core/context')
 const { createModuleSet } = require('../modules/index')
-
-// --- Configuração recebida via env (injetada pelo BotManager) ---
-const CONFIG = {
-    host:     process.env.BOT_HOST,
-    port:     parseInt(process.env.BOT_PORT ?? '25565'),
-    username: process.env.BOT_NAME,
-    password: process.env.BOT_PASSWORD,
-    auth:     'offline',
-    version:  '1.21.4',
-    checkTimeoutInterval: 120 * 1000
-}
+const { buildConnConfig } = require('../modules/auth')
 
 const OWNER = process.env.BOT_OWNER
+
+// --- Configuração montada pelo módulo de auth ---
+const CONFIG = buildConnConfig({
+    mode:     process.env.BOT_AUTH_MODE ?? 'cracked',
+    host:     process.env.BOT_HOST,
+    port:     parseInt(process.env.BOT_PORT ?? '25565'),
+    botName:  process.env.BOT_NAME,
+    password: process.env.BOT_PASSWORD,
+    owner:    OWNER,
+    version:  process.env.BOT_VERSION ?? '1.21.4'
+})
 
 let bot = null
 let ctx = null

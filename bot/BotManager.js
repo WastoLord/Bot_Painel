@@ -43,11 +43,13 @@ class BotManager extends EventEmitter {
         const child = fork(WORKER_PATH, [], {
             env: {
                 ...process.env,
-                BOT_HOST:     opts.host,
-                BOT_PORT:     String(opts.port ?? 25565),
-                BOT_NAME:     opts.botName,
-                BOT_PASSWORD: opts.password,
-                BOT_OWNER:    opts.owner
+                BOT_HOST:      opts.host,
+                BOT_PORT:      String(opts.port ?? 25565),
+                BOT_NAME:      opts.botName,
+                BOT_PASSWORD:  opts.password ?? '',
+                BOT_OWNER:     opts.owner,
+                BOT_AUTH_MODE: opts.authMode ?? 'cracked',
+                BOT_VERSION:   opts.version ?? '1.21.4'
             },
             silent: false
         })
