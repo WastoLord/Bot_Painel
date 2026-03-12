@@ -1,0 +1,74 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * { box-sizing: border-box; }
+
+  body {
+    @apply bg-stone-50 text-stone-800 font-body antialiased;
+    min-height: 100vh;
+  }
+
+  h1, h2, h3, h4 { @apply font-display; }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg font-body font-medium text-sm
+           transition-all duration-150 cursor-pointer select-none disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-primary {
+    @apply btn bg-brand-600 text-white hover:bg-brand-700 active:scale-95 shadow-sm;
+  }
+  .btn-ghost {
+    @apply btn bg-transparent text-stone-600 hover:bg-stone-100 active:scale-95;
+  }
+  .btn-danger {
+    @apply btn bg-red-500 text-white hover:bg-red-600 active:scale-95;
+  }
+
+  .card {
+    @apply bg-white rounded-2xl border border-stone-200 shadow-sm;
+  }
+
+  .input {
+    @apply w-full px-3 py-2 rounded-lg border border-stone-200 bg-white text-stone-800
+           font-body text-sm placeholder-stone-400 outline-none
+           focus:border-brand-500 focus:ring-2 focus:ring-brand-100
+           transition-all duration-150;
+  }
+
+  .badge {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium;
+  }
+  .badge-green  { @apply badge bg-emerald-100 text-emerald-700; }
+  .badge-red    { @apply badge bg-red-100 text-red-600; }
+  .badge-blue   { @apply badge bg-brand-100 text-brand-700; }
+  .badge-stone  { @apply badge bg-stone-100 text-stone-500; }
+
+  /* Dot pulsante */
+  .dot-online {
+    @apply w-2 h-2 rounded-full bg-emerald-500;
+    animation: pulse-dot 2s ease-in-out infinite;
+  }
+  .dot-offline { @apply w-2 h-2 rounded-full bg-stone-300; }
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.5; transform: scale(0.85); }
+}
+
+/* Scrollbar fina */
+::-webkit-scrollbar       { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { @apply bg-stone-300 rounded-full; }
+
+/* Chat terminal */
+.chat-line { @apply font-mono text-xs leading-relaxed; }
+.chat-line.server  { @apply text-stone-700; }
+.chat-line.error   { @apply text-red-500; }
+.chat-line.death   { @apply text-orange-500 font-medium; }
+.chat-line.panel   { @apply text-brand-600; }
+.chat-line.system  { @apply text-stone-400 italic; }
