@@ -21,7 +21,7 @@ router.get('/', (req, res) => {
     res.json(bots.map(bot => {
         const id     = botId(bot)
         const status = manager.getStatus(id)
-        return { id: bot.id, botId: id, botName: bot.bot_name, serverHost: bot.server_host, serverPort: bot.server_port, authMode: bot.auth_mode, expiresAt: bot.expires_at, online: status?.online ?? false, health: status?.health ?? 0, food: status?.food ?? 0, modules: status?.modules ?? [] }
+        return { id: bot.id, botId: id, botName: bot.bot_name, serverHost: bot.server_host, serverPort: bot.server_port, authMode: bot.auth_mode, expiresAt: bot.expires_at, owner: req.user.username, online: status?.online ?? false, health: status?.health ?? 0, food: status?.food ?? 0, modules: status?.modules ?? [] }
     }))
 })
 
@@ -32,7 +32,7 @@ router.post('/', (req, res) => {
     const bot = db.getBotById(result.lastInsertRowid)
     const id  = botId(bot)
     manager.start({ botId: id, botName: bot.bot_name, owner: req.user.username, password: bot.bot_password ?? '', authMode: bot.auth_mode, host: bot.server_host, port: bot.server_port })
-    res.status(201).json({ id: bot.id, botId: id, botName: bot.bot_name })
+    res.status(201).json({ id: bot.id, botId: id, botName: bot.bot_name, serverHost: bot.server_host, serverPort: bot.server_port, authMode: bot.auth_mode, owner: req.user.username, online: false })
 })
 
 router.get('/:id', (req, res) => {

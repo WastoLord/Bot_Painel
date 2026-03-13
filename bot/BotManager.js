@@ -140,7 +140,7 @@ class BotManager extends EventEmitter {
 
     getStatus(botId) {
         const session = this.sessions.get(botId)
-        if (!session) return null
+        if (!session || !session.status) return null
         return {
             botId,
             botName:   session.botName,

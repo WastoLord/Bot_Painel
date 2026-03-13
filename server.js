@@ -58,7 +58,7 @@ async function restaurarBots() {
 
     for (const cliente of ativos) {
         manager.start({
-            botId:    cliente.username,
+            botId:    `${cliente.username}_${cliente.id}`,
             botName:  cliente.bot_name,
             owner:    cliente.username,
             password: cliente.bot_password ?? '',

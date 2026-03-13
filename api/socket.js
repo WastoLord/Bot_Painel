@@ -23,8 +23,9 @@ function attachSocket(io, manager) {
                 socket.emit('error', { message: 'Acesso negado.' }); return
             }
             socket.join(`bot:${botId}`)
-            const status = manager.getStatus(botId)
-            if (status) socket.emit('bot:status', { botId, data: status })
+            console.log(`[Socket] Subscribe: ${botId} | Sessions: ${[...manager.sessions.keys()].join(', ')}`)
+            const st = manager.getStatus(botId)
+            if (st) socket.emit('bot:status', { botId, data: st })
         })
 
         socket.on('unsubscribe', ({ botId }) => socket.leave(`bot:${botId}`))
