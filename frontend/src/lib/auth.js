@@ -43,7 +43,7 @@ export async function api(method, path, body) {
         body: body ? JSON.stringify(body) : undefined
     })
     let res = await doReq(accessToken)
-    if (res.status === 401) {
+    if (res.status === 401 && path !== "/auth/refresh") {
         const ok = await refreshAccessToken()
         if (!ok) { window.location.href = '/login'; return null }
         res = await doReq(accessToken)

@@ -18,10 +18,18 @@ function attachSocket(io, manager) {
 
         socket.on('subscribe', ({ botId }) => {
             if (!botId) return
-            const [username] = botId.split('_')
-            if (username !== socket.user.username && socket.user.role !== 'admin') {
-                socket.emit('error', { message: 'Acesso negado.' }); return
+
+            // botId = "WastoLord_13_1" → owner = tudo menos o último segmento
+            const parts    = botId.split('_')
+            const botNumId = parts[parts.length - 1]
+            const owner    = parts.slice(0, -1).join('_')
+
+            if (owner !== socket.user.username && socket.user.role !== 'admin') {
+                console.log(`[Socket] Acesso negado: ${socket.user.username} tentou acessar ${botId}`)
+                socket.emit('error', { message: 'Acesso negado.' })
+                return
             }
+
             socket.join(`bot:${botId}`)
             console.log(`[Socket] Subscribe: ${botId} | Sessions: ${[...manager.sessions.keys()].join(', ')}`)
             const st = manager.getStatus(botId)

@@ -22,7 +22,7 @@ function ChatPanel({ botId }) {
     async function sendMsg(e) {
         e.preventDefault()
         if (!input.trim()) return
-        await api('POST', `/bots/${id}/chat`, { message: input }).catch(err => addLine(`Erro: ${err.message}`, 'error'))
+        await api('POST', `/bots/${botId.split('_').pop()}/chat`, { message: input }).catch(err => addLine(`Erro: ${err.message}`, 'error'))
         addLine(`> ${input}`, 'panel')
         setInput('')
     }

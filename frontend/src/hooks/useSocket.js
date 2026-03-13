@@ -5,19 +5,19 @@ import { getAccessToken, clearSession } from '../lib/auth'
 let socket = null
 
 export function getSocket() {
-    if (!socket) {
-        socket = io('/', {
-            auth: { token: getAccessToken() },
-            transports: ['websocket'],
-            autoConnect: true
-        })
-        socket.on('connect_error', (err) => {
-            if (err.message === 'Token inválido.') {
-                clearSession()
-                window.location.href = '/login'
-            }
-        })
-    }
+    if (socket) return socket
+    socket = io('/', {
+        auth: { token: getAccessToken() },
+        transports: ['websocket'],
+        autoConnect: true
+    })
+    socket.on('connect', () => console.log('[Socket] Conectado:', socket.id))
+    socket.on('connect_error', (err) => {
+        console.error('[Socket] Erro:', err.message)
+        if (err.message === 'Token inválido.') {
+            clearSession(); window.location.href = '/login'
+        }
+    })
     return socket
 }
 
@@ -28,16 +28,30 @@ export function useBot(botId, handlers) {
     useEffect(() => {
         if (!botId) return
         const s = getSocket()
-        s.emit('subscribe', { botId })
-        const on = (ev, fn) => s.on(ev, (data) => { if (data.botId === botId) fn(data) })
-        on('bot:status', (d) => handlersRef.current.onStatus?.(d.data))
-        on('bot:chat',   (d) => handlersRef.current.onChat?.(d.entry))
-        on('bot:error',  (d) => handlersRef.current.onError?.(d.message))
-        on('bot:death',  ()  => handlersRef.current.onDeath?.())
-        on('bot:ready',  ()  => handlersRef.current.onReady?.())
+
+        const doSubscribe = () => s.emit('subscribe', { botId })
+        if (s.connected) doSubscribe()
+        else s.once('connect', doSubscribe)
+
+        const onStatus  = (d) => { if (d.botId === botId) handlersRef.current.onStatus?.(d.data) }
+        const onChat    = (d) => { if (d.botId === botId) handlersRef.current.onChat?.(d.entry) }
+        const onError   = (d) => { if (d.botId === botId) handlersRef.current.onError?.(d.message) }
+        const onDeath   = (d) => { if (d.botId === botId) handlersRef.current.onDeath?.() }
+        const onReady   = (d) => { if (d.botId === botId) handlersRef.current.onReady?.() }
+
+        s.on('bot:status',  onStatus)
+        s.on('bot:chat',    onChat)
+        s.on('bot:error',   onError)
+        s.on('bot:death',   onDeath)
+        s.on('bot:ready',   onReady)
+
         return () => {
             s.emit('unsubscribe', { botId })
-            ;['bot:status','bot:chat','bot:error','bot:death','bot:ready'].forEach(e => s.off(e))
+            s.off('bot:status',  onStatus)
+            s.off('bot:chat',    onChat)
+            s.off('bot:error',   onError)
+            s.off('bot:death',   onDeath)
+            s.off('bot:ready',   onReady)
         }
     }, [botId])
 }
