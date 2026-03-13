@@ -38,3 +38,9 @@ pids/
 
 # Uploads / mídia
 uploads/
+
+# Banco de dados
+data/
+*.db
+*.db-shm
+*.db-wal
