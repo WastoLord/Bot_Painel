@@ -83,3 +83,12 @@ router.patch('/:id/modules/:name/config', (req, res) => {
 })
 
 module.exports = router
+
+router.post('/:id/action', (req, res) => {
+    const bot = db.getBotById(req.params.id)
+    if (!ensureOwner(req, res, bot)) return
+    const { module, method, args } = req.body ?? {}
+    if (!module || !method) return res.status(400).json({ error: 'module e method são obrigatórios.' })
+    manager.callAction(botId(bot), module, method, args ?? [])
+    res.json({ ok: true })
+})

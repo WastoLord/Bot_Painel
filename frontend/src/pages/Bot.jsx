@@ -67,6 +67,62 @@ function ModuleToggle({ name, label, enabled, onToggle }) {
     )
 }
 
+function ControlPanel({ botId }) {
+    const id = botId?.split('_').pop()
+    const [followNick, setFollowNick] = useState('')
+    const [loading, setLoading] = useState('')
+
+    async function action(module, method, args = []) {
+        setLoading(`${module}.${method}`)
+        await api('POST', `/bots/${id}/action`, { module, method, args }).catch(console.error)
+        setLoading('')
+    }
+
+    return (
+        <div className="card p-4 space-y-4">
+            <p className="text-xs font-semibold text-stone-400 uppercase tracking-wide">Controles</p>
+
+            {/* Follow */}
+            <div>
+                <p className="text-xs font-medium text-stone-600 mb-2">Follow</p>
+                <div className="flex gap-2">
+                    <input
+                        className="input text-xs"
+                        placeholder="Nick do jogador..."
+                        value={followNick}
+                        onChange={e => setFollowNick(e.target.value)}
+                    />
+                    <button
+                        className="btn-primary px-3 shrink-0 text-xs"
+                        disabled={!followNick.trim() || loading === 'movement.follow'}
+                        onClick={() => action('movement', 'follow', [followNick.trim()])}
+                    >
+                        {loading === 'movement.follow' ? '...' : 'Seguir'}
+                    </button>
+                </div>
+                <p className="text-xs text-stone-400 mt-1">Ou use <span className="font-mono">!follow Nick</span> no chat do MC</p>
+            </div>
+
+            {/* Parar */}
+            <div>
+                <p className="text-xs font-medium text-stone-600 mb-2">Movimento</p>
+                <div className="flex gap-2">
+                    <button className="btn-ghost flex-1 text-xs py-1.5" onClick={() => action('movement', 'stop')}>
+                        🛑 Parar
+                    </button>
+                    <button className="btn-ghost flex-1 text-xs py-1.5" onClick={() => action('movement', 'startElevator', ['subir'])}>
+                        ⬆️ Subir
+                    </button>
+                    <button className="btn-ghost flex-1 text-xs py-1.5" onClick={() => action('movement', 'startElevator', ['descer'])}>
+                        ⬇️ Descer
+                    </button>
+                </div>
+                <p className="text-xs text-stone-400 mt-1">Ou use <span className="font-mono">!parar</span> / <span className="font-mono">!subir</span> / <span className="font-mono">!descer</span> no MC</p>
+            </div>
+        </div>
+    )
+}
+
 export default function BotPage() {
     const { id } = useParams()
     const navigate = useNavigate()
@@ -97,6 +153,7 @@ export default function BotPage() {
                     <h1 className="font-display font-bold text-xl text-stone-900">{bot?.botName}</h1>
                     <span className="text-stone-400 text-sm">{bot?.serverHost}:{bot?.serverPort}</span>
                 </div>
+
                 <div className="grid grid-cols-3 gap-4">
                     <div className="card p-4 col-span-2 space-y-3">
                         <p className="text-xs font-semibold text-stone-400 uppercase tracking-wide">Status</p>
@@ -116,6 +173,8 @@ export default function BotPage() {
                         )) ?? <p className="text-sm text-stone-400 px-4 pb-4">Offline.</p>}
                     </div>
                 </div>
+
+                <ControlPanel botId={botId} />
                 <ChatPanel botId={botId} />
             </div>
         </Layout>
